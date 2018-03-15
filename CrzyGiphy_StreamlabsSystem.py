@@ -230,5 +230,3 @@ def OpenReadMe():
     location = os.path.join(os.path.dirname(__file__), "README.txt")
     os.startfile(location)
     return
-
-
