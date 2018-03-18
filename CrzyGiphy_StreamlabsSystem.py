@@ -92,35 +92,38 @@ def Execute(data):
     if data.IsChatMessage() and data.GetParam(0).lower() == CGSettings.Command.lower():
 
         # set permission of the permision
-        HasPerm = Parent.HasPermission(data.User, CGSettings.Permission, CGSettings.PermissionInfo)
-
-        if not CGSettings.OnlyLive or Parent.IsLive() and HasPerm:
+        has_perm = Parent.HasPermission(data.User, CGSettings.Permission, CGSettings.PermissionInfo)
+        with open('permission.txt', 'w') as outfile:
+            outfile.write(str(has_perm))
+        if not CGSettings.OnlyLive or Parent.IsLive() and has_perm:
 
             # check if command is on cooldown
-            onCD = Parent.IsOnCooldown(ScriptName, CGSettings.Command)
-            onUCD = Parent.IsOnUserCooldown(ScriptName, CGSettings.Command, data.User)
+            cooldown = Parent.IsOnCooldown(ScriptName, CGSettings.Command)
+            user_cool_down = Parent.IsOnUserCooldown(ScriptName, CGSettings.Command, data.User)
             caster = Parent.HasPermission(data.User, "Caster", "")
 
-            if (onCD or onUCD):  # and caster is False:
+            if (cooldown or user_cool_down) and caster is False:
                 # send cooldown message
-                CD = Parent.GetCooldownDuration(ScriptName, CGSettings.Command)
-                userCD = Parent.GetUserCooldownDuration(ScriptName, CGSettings.Command, data.User)
+                cooldown_duration = Parent.GetCooldownDuration(ScriptName, CGSettings.Command)
+                user_cooldown_duration = Parent.GetUserCooldownDuration(ScriptName, CGSettings.Command, data.User)
 
-                if CD > userCD:
+                if cooldown_duration > user_cooldown_duration:
                     # set remaining cooldown
-                    CDRemaining = CD
+                    m_cooldown_remaining = cooldown_duration
 
                     # send cooldown message
-                    message = CGSettings.OnCoolDown.format(data.User, CDRemaining)
-                    SendResp(data, CGSettings.Usage, message)
+                    message = CGSettings.OnCoolDown.format(data.User, m_cooldown_remaining)
+                    #SendResp(data, CGSettings.Usage, message)
+                    Parent.SendStreamMessage(message)
                     with open('cooldown.txt', 'w') as outfile:
                         outfile.write("On Global Cooldown.")
                 else:
-                    CDRemaining = userCD
+                    m_cooldown_remaining = user_cooldown_duration
 
                     # send usercooldown message
-                    message = CGSettings.OnUserCoolDown.format(data.User, CDRemaining)
+                    #message = CGSettings.OnUserCoolDown.format(data.User, m_cooldown_remaining)
                     SendResp(data, CGSettings.Usage, message)
+                    Parent.SendStreamMessage(message)
 
                     with open('cooldown.txt', 'w') as outfile:
                         outfile.write("On User CoolDown. Cooldown.")
@@ -136,7 +139,7 @@ def Execute(data):
 
                 # Remove currency before executing the command.
 
-                if Parent.GetPoints(data.User) > CGSettings.GiphyCost:
+                if Parent.GetPoints(data.User) >= CGSettings.GiphyCost:
                     Parent.RemovePoints(data.User, CGSettings.GiphyCost)
 
                     # lets start creating the gipy via api.
