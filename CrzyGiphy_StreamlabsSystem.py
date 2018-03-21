@@ -68,6 +68,7 @@ class Settings:
             json.dump(self.__dict__, f, encoding='utf-8-sig')
         with codecs.open(settingsFile.replace("json", "js"), encoding='utf-8-sig', mode='w+') as f:
             f.write("var settings = {0};".format(json.dumps(self.__dict__, encoding='utf-8-sig')))
+        return
 
 
 def ReloadSettings(jsonData):
