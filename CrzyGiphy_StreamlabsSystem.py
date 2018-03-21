@@ -114,18 +114,15 @@ def Execute(data):
 
                     # send cooldown message
                     message = CGSettings.OnCoolDown.format(data.User, m_cooldown_remaining)
-                    #SendResp(data, CGSettings.Usage, message)
-                    Parent.SendStreamMessage(message)
+                    SendResp(data, CGSettings.Usage, message)
                     with open('cooldown.txt', 'w') as outfile:
                         outfile.write("On Global Cooldown.")
                 else:
                     m_cooldown_remaining = user_cooldown_duration
 
                     # send usercooldown message
-                    #message = CGSettings.OnUserCoolDown.format(data.User, m_cooldown_remaining)
+                    message = CGSettings.OnUserCoolDown.format(data.User, m_cooldown_remaining)
                     SendResp(data, CGSettings.Usage, message)
-                    Parent.SendStreamMessage(message)
-
                     with open('cooldown.txt', 'w') as outfile:
                         outfile.write("On User CoolDown. Cooldown.")
 
