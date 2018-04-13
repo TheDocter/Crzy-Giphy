@@ -51,10 +51,13 @@ class Settings:
             self.GiphyCreatedMsg = 'Giphy was created. It will show shortly.'
             self.GiphyErrorMsg = 'There was an issue with creating the giphy'
             self.GiphyCost = 5
-            self.OnCoolDown = "{0} the command is still on cool down for {1} seconds!"
-            self.UserCoolDown = 45
+            self.UseCD = True
+            self.Cooldown = 5
+            self.OnCooldown = "{0} the command is still on cooldown for {1} seconds!"
+            self.UserCooldown = 10
             self.OnUserCoolDown = "{0} the command is still on user cooldown for {1} seconds!"
-            self.InfoResponse = 'To create a giphy use !giphy keyword. At this time the giphy command only accepts' \
+            self.CasterCD = True
+            self.InfoResponse = 'To create a giphy use !giphy keyword keyword. At this time the giphy command only accepts' \
                                 'two keyword. Future versions will allow a full string of keywords.'
 
     def ReloadSettings(self, data):
@@ -92,91 +95,58 @@ def Execute(data):
     """ Execute data and process the message """
     if data.IsChatMessage() and data.GetParam(0).lower() == CGSettings.Command.lower():
 
-        # set permission of the permision
-        has_perm = Parent.HasPermission(data.User, CGSettings.Permission, CGSettings.PermissionInfo)
-        with open('permission.txt', 'w') as outfile:
-            outfile.write(str(has_perm))
-        if not CGSettings.OnlyLive or Parent.IsLive() and has_perm:
-
-            # check if command is on cooldown
-            cooldown = Parent.IsOnCooldown(ScriptName, CGSettings.Command)
-            user_cool_down = Parent.IsOnUserCooldown(ScriptName, CGSettings.Command, data.User)
-            caster = Parent.HasPermission(data.User, "Caster", "")
-
-            if (cooldown or user_cool_down) and caster is False:
-                # send cooldown message
-                cooldown_duration = Parent.GetCooldownDuration(ScriptName, CGSettings.Command)
-                user_cooldown_duration = Parent.GetUserCooldownDuration(ScriptName, CGSettings.Command, data.User)
-
-                if cooldown_duration > user_cooldown_duration:
-                    # set remaining cooldown
-                    m_cooldown_remaining = cooldown_duration
-
-                    # send cooldown message
-                    message = CGSettings.OnCoolDown.format(data.User, m_cooldown_remaining)
-                    SendResp(data, CGSettings.Usage, message)
-                    with open('cooldown.txt', 'w') as outfile:
-                        outfile.write("On Global Cooldown.")
-                else:
-                    m_cooldown_remaining = user_cooldown_duration
-
-                    # send usercooldown message
-                    message = CGSettings.OnUserCoolDown.format(data.User, m_cooldown_remaining)
-                    SendResp(data, CGSettings.Usage, message)
-                    with open('cooldown.txt', 'w') as outfile:
-                        outfile.write("On User CoolDown. Cooldown.")
-
-                return
-            # if not on cooldown start creating a giphy
-            else:
-                # get the parameter
-                if data.GetParamCount() > 3:
-                    # to many params send response
-                    SendResp(data, CGSettings.Usage, CGSettings.InfoResponse)
-                    return
-
-                # Remove currency before executing the command.
-
-                if Parent.GetPoints(data.User) >= CGSettings.GiphyCost:
-                    Parent.RemovePoints(data.User, CGSettings.GiphyCost)
-
-                    # lets start creating the gipy via api.
-                    giphy = Parent.GetRequest("http://api.giphy.com/v1/gifs/search?"
-                                              "q=" + data.GetParam(1) + "+" + data.GetParam(2) + "&"
-                                              "api_key=" + str(CGSettings.GiphyApi) + "&"
-                                              "limit=1&rating=pg13", {})
-
-                    # Take response and correctly format it to json!
-                    # CAUSE GETREUEST IS SCREWEDUP AND RETURNS STRING INSTEAD OF PURE JSON DATA!!!!
-                    fixedbracket = giphy.replace('"{', '{')
-                    fixedendbracket = fixedbracket.replace('}"', '}')
-                    noslash = fixedendbracket.replace('\\"', '"')
-                    noslashes = noslash.replace('\\/', '/')
-
-                    # Load it to format correctly into json
-                    jsondata = json.loads(noslashes)
-                    if jsondata['status'] == '403':
-                        SendResp(data, CGSettings.Usage, CGSettings.GiphyErrorMsg)
-                        return
-
-                    with open('data.txt', 'w') as outfile:
-                        json.dump(jsondata["response"]['data'][0]['images']['downsized_large']['url'], outfile)
-
-                    gifydata = jsondata["response"]['data'][0]['images']['downsized_large']['url']
-
-                    # Send confirmation that gify was created.
-                    SendResp(data, CGSettings.Usage, CGSettings.GiphyCreatedMsg)
-                    # Lets remove currecny from the user.
-
-                    # send it to web socket
-                    Parent.BroadcastWsEvent('EVENT_GIFYCREATED', gifydata)
-                    return
-                else:
-                    SendResp(data, CGSettings.Usage, "{0}, you do not have enough currency to use this command.".format(data.User))
-        else:
-            message = CGSettings.PermissionResp.format(data.User, CGSettings.Permission, CGSettings.PermissionInfo)
-            SendResp(data, CGSettings.Usage, message)
+        # check to see if the user has permissions.
+        if not haspermission(data):
             return
+
+        if not CGSettings.OnlyLive or Parent.IsLive():
+            # get the parameter
+            if data.GetParamCount() > 3:
+                # to many params send response
+                SendResp(data, CGSettings.Usage, CGSettings.InfoResponse)
+                return
+
+            # Remove currency before executing the command.
+
+            if Parent.GetPoints(data.User) >= CGSettings.GiphyCost:
+                Parent.RemovePoints(data.User, CGSettings.GiphyCost)
+
+                # lets start creating the gipy via api.
+                giphy = Parent.GetRequest("http://api.giphy.com/v1/gifs/search?"
+                                          "q=" + data.GetParam(1) + "+" + data.GetParam(2) + "&"
+                                          "api_key=" + str(CGSettings.GiphyApi) + "&"
+                                          "limit=1&rating=pg13", {})
+
+                # Take response and correctly format it to json!
+                # CAUSE GETREUEST IS SCREWEDUP AND RETURNS STRING INSTEAD OF PURE JSON DATA!!!!
+                fixedbracket = giphy.replace('"{', '{')
+                fixedendbracket = fixedbracket.replace('}"', '}')
+                noslash = fixedendbracket.replace('\\"', '"')
+                noslashes = noslash.replace('\\/', '/')
+
+                # Load it to format correctly into json
+                jsondata = json.loads(noslashes)
+                if jsondata['status'] == '403':
+                    SendResp(data, CGSettings.Usage, CGSettings.GiphyErrorMsg)
+                    return
+
+                with open('data.txt', 'w') as outfile:
+                    json.dump(jsondata["response"]['data'][0]['images']['downsized_large']['url'], outfile)
+
+                gifydata = jsondata["response"]['data'][0]['images']['downsized_large']['url']
+
+                # Send confirmation that gify was created.
+                SendResp(data, CGSettings.Usage, CGSettings.GiphyCreatedMsg)
+                # Lets remove currecny from the user.
+
+                # send it to web socket
+                Parent.BroadcastWsEvent('EVENT_GIFYCREATED', gifydata)
+
+                # add user cooldown to the user
+                addcooldown(data)
+                return
+            else:
+                SendResp(data, CGSettings.Usage, "{0}, you do not have enough currency to use this command.".format(data.User))
 
 
 def Tick():
@@ -226,8 +196,58 @@ def SendResp(data, rUsage, sendMessage):
     return
 
 
-def OpenReadMe():
+"""
+
+Required custom fucntions needed for plugin.
+
+"""
+def openreadme():
     """Open the readme.txt in the scripts folder"""
     location = os.path.join(os.path.dirname(__file__), "README.txt")
     os.startfile(location)
     return
+
+def haspermission(data):
+    """ CHecks to see if the user hs the correct permission.  Based on Castorr91's Gamble"""
+    if not Parent.HasPermission(data.User, CGSettings.Permission, CGSettings.PermissionInfo):
+        message = CGSettings.PermissionResp.format(data.UserName, CGSettings.Permission, CGSettings.PermissionInfo)
+        return False
+    return True
+
+def is_on_cooldown(data):
+    """ Checks to see if user is on cooldown. """
+    # check if command is on cooldown
+    cooldown = Parent.IsOnCooldown(ScriptName, CGSettings.Command)
+    user_cool_down = Parent.IsOnUserCooldown(ScriptName, CGSettings.Command, data.User)
+    caster = Parent.HasPermission(data.User, "Caster", "")
+
+    if (cooldown or user_cool_down) and caster is False:
+
+        if CGSettings.UseCD:
+            cooldownDuration = Parent.GetCooldownDuration(ScriptName, CGSettings.Command)
+            userCDD = Parent.GetUserCooldownDuration(ScriptName, CGSettings.Command, data.User)
+
+            if cooldownDuration > userCDD:
+                m_CooldownRemaining = cooldownDuration
+
+                message = CGSettings.OnCooldown.format(data.UserName, m_CooldownRemaining)
+                SendResp(data, CGSettings.Usage, message)
+
+            else:
+                m_CooldownRemaining = userCDD
+
+                message = CGSettings.OnUserCooldown.format(data.UserName, m_CooldownRemaining)
+                SendResp(data, CGSettings.Usage, message)
+        return True
+    return False
+
+
+def addcooldown(data):
+    """Create Cooldowns Based on Castorr91's Gamble"""
+    if Parent.HasPermission(data.User, "Caster", "") and CGSettings.CasterCD:
+        Parent.AddCooldown(ScriptName, CGSettings.Command, CGSettings.Cooldown)
+        return
+
+    else:
+        Parent.AddUserCooldown(ScriptName, CGSettings.Command, data.User, CGSettings.UserCooldown)
+        Parent.AddCooldown(ScriptName, CGSettings.Command, CGSettings.Cooldown)
