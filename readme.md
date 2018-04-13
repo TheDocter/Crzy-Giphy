@@ -36,6 +36,12 @@ reach out to me and I'll update/fix what ever the issue was. If its just a featu
 inquires as this was specifically built and for Goltrix2580 needs with the knowledge it was going to be released to the public, as we
 both could not find a gif script.
 
+Help me get the developers of Stream Labs Chatbot add in a correct apiread function! As of right now it returns UNICODE, yes a goddamn unicode string! 
+Please login to their site and upvote that was turned down by AnkhHeart saying there is no need for it. WHICH IF LOOK AT HOW I HAD TO GET IT TO LOAD 
+IT IS NEEDED!!!
+
+[Request for JSON ReadAPI function instead of getting a god damn unicode string!](https://ideas.streamlabs.com/ideas/SL-I-3215)
+
 [Donations are always welcome. But not required](https://paypal.me/thecrzydoctor)
 
 # Change Log
