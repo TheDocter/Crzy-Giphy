@@ -62,3 +62,4 @@ Verion 1.2.0
 - Added in default gif if nothing was found.
 - Added in message being sent if no giphy was found.
 - Added in error handeling in settings when saving file.
+- Added in "We ain't found shit" giphy when no giphy is supplied.

@@ -54,3 +54,14 @@ Version 1.1.0
 - Centered gif in html page.
 - Updated Rating to be PG
 - Added in !giphy cost to remove points and also help limit the spamming of the command if cooldown is lower than default.
+
+Verion 1.2.0
+- Based permission check off of Castorr91's Gamble Script
+- Based cooldown on Castorr92's Gameble Script
+- Removed un-needed code from testing purposes.
+- Organized UI json based on category
+- Fixed currency check bug
+- Added in default gif if nothing was found.
+- Added in message being sent if no giphy was found.
+- Added in error handeling in settings when saving file.
+- Added in "We ain't found shit" giphy when no giphy is supplied.
