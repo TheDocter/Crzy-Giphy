@@ -15,7 +15,8 @@ socket.onopen = function()
  website: "https://twitch.tv/thecrzydoctor",
  api_key: API_Key,
  events: [
- "EVENT_GIFYCREATED"
+ "EVENT_GIFYCREATED",
+ "EVENT_GIFYNOTFOUND"
  ]
  }
 
@@ -69,21 +70,21 @@ function ShowGify(data){
         .delay(5000)
         .fadeOut(100);
     }
-    else{
-        if (hasValue(pic)){
-            $("#gify")
-            .prepend("<center><div> <img src=" + pic['data'] + " width='500' height='500'></div></center>")
-            .children(':first')
-            .delay(5000)
-            .fadeOut(100);
-        }
-        else{
-            $("#gify")
-            .prepend("<center><div> <img src='https://media3.giphy.com/media/LGVQJ4cQGPs8o/giphy.gif' width='350' height='275'></div></center>")
-            .children(':first')
-            .delay(5000)
-            .fadeOut(100);
-        }
+
+    if ((pic["event"] === "EVENT_GIFYCREATED")){
+        $("#gify")
+        .prepend("<center><div> <img src=" + pic['data'] + " width='500' height='500'></div></center>")
+        .children(':first')
+        .delay(5000)
+        .fadeOut(100);
+    }
+
+    if (pic["event"] === "EVENT_GIFYNOTFOUND"){
+        $("#gify")
+         .prepend("<center><div> <img src='https://media3.giphy.com/media/LGVQJ4cQGPs8o/giphy.gif' width='350' height='275'></div></center>")
+         .children(':first')
+         .delay(5000)
+         .fadeOut(100);
     }
 
 }
@@ -92,8 +93,8 @@ function ShowGify(data){
 // Check to see if pic has any data
 //----------------------------------
 function hasValue(pic){
-    if (pic[data] == null){
-        return false;
+    if(pic.hasOwnProperty('data')){
+        return true;
     }
-    return true;
+    return false;
 }

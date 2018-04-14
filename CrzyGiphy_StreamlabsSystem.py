@@ -135,23 +135,25 @@ def Execute(data):
             # Load it to format correctly into json
             jsondata = json.loads(noslashes)
 
-            gifydata = jsondata["response"]['data'][0]['images']['downsized_large']['url']
+            try:
+                gifydata = jsondata["response"]['data'][0]['images']['downsized_large']['url']
 
-            if gifydata is None:
+                # Send confirmation that gify was created.
+                SendResp(data, CGSettings.Usage, CGSettings.GiphyCreatedMsg)
+                # Lets remove currecny from the user.
+
+                # send it to web socket
+                Parent.BroadcastWsEvent('EVENT_GIFYCREATED', gifydata)
+
+                # add user cooldown to the user
+                addcooldown(data)
+                return
+            except IndexError:
                 # no image was found. But its okay we have something in place for this.
                 message = CGSettings.GiphyErrorMsg.format(data.UserName)
                 SendResp(data, CGSettings.Usage, message)
-            # Send confirmation that gify was created.
-            SendResp(data, CGSettings.Usage, CGSettings.GiphyCreatedMsg)
-            # Lets remove currecny from the user.
-
-            # send it to web socket
-            Parent.BroadcastWsEvent('EVENT_GIFYCREATED', gifydata)
-
-            # add user cooldown to the user
-            addcooldown(data)
-
-            return
+                Parent.BroadcastWsEvent('EVENT_GIFYNOTFOUND', '')
+                return
 
 
 def Tick():
