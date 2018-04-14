@@ -123,7 +123,7 @@ def Execute(data):
             giphy = Parent.GetRequest("http://api.giphy.com/v1/gifs/search?"
                                       "q=" + data.GetParam(1) + "+" + data.GetParam(2) + "&"
                                       "api_key=" + str(CGSettings.GiphyApi) + "&"
-                                      "limit=1&rating=pg13", {})
+                                      "limit=1&rating=pg", {})
 
             # Take response and correctly format it to json!
             # CAUSE GETREUEST IS SCREWEDUP AND RETURNS STRING INSTEAD OF PURE JSON DATA!!!!
