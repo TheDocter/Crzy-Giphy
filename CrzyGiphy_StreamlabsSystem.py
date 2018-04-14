@@ -131,10 +131,6 @@ def Execute(data):
             # Load it to format correctly into json
             jsondata = json.loads(noslashes)
 
-
-            with open('data.txt', 'w') as outfile:
-                json.dump(jsondata["response"]['data'][0]['images']['downsized_large']['url'], outfile)
-
             gifydata = jsondata["response"]['data'][0]['images']['downsized_large']['url']
 
             if gifydata is None:

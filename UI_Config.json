@@ -72,6 +72,13 @@
     "tooltip": "The cost of how much a giphy will cost when created successfully.",
     "group": "Giphy"
   },
+  "CasterCD": {
+    "type": "checkbox",
+    "value": true,
+  	"label": "Caster ignores cooldown",
+    "tooltip": "Enable/Disable cooldown for caster",
+  	"group": "Cooldown"
+  },
   "CoolDown": {
     "type": "numberbox",
     "label": "User Cooldown (seconds)",
