@@ -47,7 +47,7 @@ class Settings:
             self.PermissionInfo = ''
             self.PermissionResp = '{0} -> only {1} and higher can use this command'
             self.GiphyCreatedMsg = 'Giphy was created. It will show shortly.'
-            self.GiphyErrorMsg = 'There was an issue with creating the giphy'
+            self.GiphyErrorMsg = '{0}, There was an issue with creating the giphy'
             self.GiphyCost = 5
             self.UseCD = True
             self.Cooldown = 5
@@ -55,9 +55,9 @@ class Settings:
             self.UserCooldown = 10
             self.OnUserCoolDown = "{0} the command is still on user cooldown for {1} seconds!"
             self.CasterCD = True
-            self.NoCurrency = "{0} -> You don't have any currency to gamble!"
+            self.NoCurrency = "{0} -> You don't have any currency to create a giphy!"
             self.InfoResponse = 'To create a giphy use !giphy keyword keyword. At this time the giphy command only accepts' \
-                                'two keyword. Future versions will allow a full string of keywords.'
+                                'two keyword.'
 
     def ReloadSettings(self, data):
         """ Reload settings file. """
@@ -96,12 +96,12 @@ def Execute(data):
 
         # make sure the user has enough points
         if Parent.GetPoints(data.User) == 0:
+            message = CGSettings.NoCurrency.format(data.UserName)
+            SendResp(data, CGSettings.Usage, message)
             return
 
         # check to see if the user has permissions.
         if not haspermission(data):
-            message = CGSettings.NoCurrency.format(data.UserName)
-            SendResp(data, CGSettings.Usage, message)
             return
 
         if not CGSettings.OnlyLive or Parent.IsLive():
@@ -113,46 +113,45 @@ def Execute(data):
 
             # Remove currency before executing the command.
 
-            if Parent.GetPoints(data.User) >= CGSettings.GiphyCost:
-                Parent.RemovePoints(data.User, CGSettings.GiphyCost)
+            Parent.RemovePoints(data.User, CGSettings.GiphyCost)
 
-                # lets start creating the gipy via api.
-                giphy = Parent.GetRequest("http://api.giphy.com/v1/gifs/search?"
-                                          "q=" + data.GetParam(1) + "+" + data.GetParam(2) + "&"
-                                          "api_key=" + str(CGSettings.GiphyApi) + "&"
-                                          "limit=1&rating=pg13", {})
+            # lets start creating the gipy via api.
+            giphy = Parent.GetRequest("http://api.giphy.com/v1/gifs/search?"
+                                      "q=" + data.GetParam(1) + "+" + data.GetParam(2) + "&"
+                                      "api_key=" + str(CGSettings.GiphyApi) + "&"
+                                      "limit=1&rating=pg13", {})
 
-                # Take response and correctly format it to json!
-                # CAUSE GETREUEST IS SCREWEDUP AND RETURNS STRING INSTEAD OF PURE JSON DATA!!!!
-                fixedbracket = giphy.replace('"{', '{')
-                fixedendbracket = fixedbracket.replace('}"', '}')
-                noslash = fixedendbracket.replace('\\"', '"')
-                noslashes = noslash.replace('\\/', '/')
+            # Take response and correctly format it to json!
+            # CAUSE GETREUEST IS SCREWEDUP AND RETURNS STRING INSTEAD OF PURE JSON DATA!!!!
+            fixedbracket = giphy.replace('"{', '{')
+            fixedendbracket = fixedbracket.replace('}"', '}')
+            noslash = fixedendbracket.replace('\\"', '"')
+            noslashes = noslash.replace('\\/', '/')
 
-                # Load it to format correctly into json
-                jsondata = json.loads(noslashes)
+            # Load it to format correctly into json
+            jsondata = json.loads(noslashes)
 
 
-                with open('data.txt', 'w') as outfile:
-                    json.dump(jsondata["response"]['data'][0]['images']['downsized_large']['url'], outfile)
+            with open('data.txt', 'w') as outfile:
+                json.dump(jsondata["response"]['data'][0]['images']['downsized_large']['url'], outfile)
 
-                gifydata = jsondata["response"]['data'][0]['images']['downsized_large']['url']
+            gifydata = jsondata["response"]['data'][0]['images']['downsized_large']['url']
 
-                if gifydata is None:
-                    # no image was found. But its okay we have something in place for this.
+            if gifydata is None:
+                # no image was found. But its okay we have something in place for this.
+                message = CGSettings.GiphyErrorMsg.format(data.UserName)
+                SendResp(data, CGSettings.Usage, message)
+            # Send confirmation that gify was created.
+            SendResp(data, CGSettings.Usage, CGSettings.GiphyCreatedMsg)
+            # Lets remove currecny from the user.
 
-                # Send confirmation that gify was created.
-                SendResp(data, CGSettings.Usage, CGSettings.GiphyCreatedMsg)
-                # Lets remove currecny from the user.
+            # send it to web socket
+            Parent.BroadcastWsEvent('EVENT_GIFYCREATED', gifydata)
 
-                # send it to web socket
-                Parent.BroadcastWsEvent('EVENT_GIFYCREATED', gifydata)
+            # add user cooldown to the user
+            addcooldown(data)
 
-                # add user cooldown to the user
-                addcooldown(data)
-                return
-            else:
-                SendResp(data, CGSettings.Usage, "{0}, you do not have enough currency to use this command.".format(data.User))
+            return
 
 
 def Tick():
