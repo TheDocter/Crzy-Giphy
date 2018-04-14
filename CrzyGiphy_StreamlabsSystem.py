@@ -226,7 +226,7 @@ def is_on_cooldown(data):
     user_cool_down = Parent.IsOnUserCooldown(ScriptName, CGSettings.Command, data.User)
     caster = Parent.HasPermission(data.User, "Caster", "")
 
-    if (cooldown or user_cool_down) and caster is False and not  CGSettings.CasterCD:
+    if (cooldown or user_cool_down) and caster is False and not CGSettings.CasterCD:
 
         if CGSettings.UseCD:
             cooldownDuration = Parent.GetCooldownDuration(ScriptName, CGSettings.Command)
@@ -244,7 +244,7 @@ def is_on_cooldown(data):
                 message = CGSettings.OnUserCoolDown.format(data.UserName, m_CooldownRemaining)
                 SendResp(data, CGSettings.Usage, message)
         return True
-    elif CGSettings.CasterCD:
+    elif (cooldown or user_cool_down) and CGSettings.CasterCD:
         if CGSettings.UseCD:
             cooldownDuration = Parent.GetCooldownDuration(ScriptName, CGSettings.Command)
             userCDD = Parent.GetUserCooldownDuration(ScriptName, CGSettings.Command, data.User)
