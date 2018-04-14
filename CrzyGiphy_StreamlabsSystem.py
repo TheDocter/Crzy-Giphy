@@ -216,11 +216,12 @@ def haspermission(data):
     """ CHecks to see if the user hs the correct permission.  Based on Castorr91's Gamble"""
     if not Parent.HasPermission(data.User, CGSettings.Permission, CGSettings.PermissionInfo):
         message = CGSettings.PermissionResp.format(data.UserName, CGSettings.Permission, CGSettings.PermissionInfo)
+        SendResp(data, CGSettings.Usage, message)
         return False
     return True
 
 def is_on_cooldown(data):
-    """ Checks to see if user is on cooldown. """
+    """ Checks to see if user is on cooldown. Based on Castorr91's Gamble"""
     # check if command is on cooldown
     cooldown = Parent.IsOnCooldown(ScriptName, CGSettings.Command)
     user_cool_down = Parent.IsOnUserCooldown(ScriptName, CGSettings.Command, data.User)
