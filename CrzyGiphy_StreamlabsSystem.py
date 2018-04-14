@@ -95,7 +95,7 @@ def Execute(data):
     if data.IsChatMessage() and data.GetParam(0).lower() == CGSettings.Command.lower():
 
         # make sure the user has enough points
-        if Parent.GetPoints(data.User) == 0:
+        if Parent.GetPoints(data.User) < CGSettings.GiphyCost:
             message = CGSettings.NoCurrency.format(data.UserName)
             SendResp(data, CGSettings.Usage, message)
             return
