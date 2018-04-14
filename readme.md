@@ -38,7 +38,7 @@ both could not find a gif script.
 
 Help me get the developers of Stream Labs Chatbot add in a correct apiread function! As of right now it returns UNICODE, yes a goddamn unicode string! 
 Please login to their site and upvote that was turned down by AnkhHeart saying there is no need for it. WHICH IF LOOK AT HOW I HAD TO GET IT TO LOAD 
-IT IS NEEDED!!!
+IT IS NEEDED!!! To much code needed to correct the issue. Wasteful!
 
 [Request for JSON ReadAPI function instead of getting a god damn unicode string!](https://ideas.streamlabs.com/ideas/SL-I-3215)
 
@@ -56,11 +56,11 @@ Version 1.1.0
 - Added in !giphy cost to remove points and also help limit the spamming of the command if cooldown is lower than default.
 
 Verion 1.2.0
-- Based permission check off of Castorr91's Gamble Script
-- Based cooldown on Castorr92's Gameble Script
+- Based permission check off of Castorr91's Gamble Script.
+- Based cooldown on Castorr92's Gameble Script.
 - Removed un-needed code from testing purposes.
-- Organized UI json based on category
-- Fixed currency check bug
+- Organized UI json based on category.
+- Fixed currency check bug.
 - Added in default gif if nothing was found.
 - Added in message being sent if no giphy was found.
 - Added in error handeling in settings when saving file.
