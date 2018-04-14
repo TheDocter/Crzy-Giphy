@@ -107,6 +107,13 @@
     "tooltip": "Response when the command is used wrong.",
     "group": "Responses"
   },
+  "NoCurrency": {
+    "type": "textbox",
+    "value": "{0} -> You don't have any currency to gamble!",
+    "label": "No currency response",
+    "tooltip": "Message sent when user doesn't have any currency to gamble \r\n{0} = User",
+    "group": "Responses"
+  },
     "openReadMe": {
     "type": "button",
     "label": "Open README.txt",

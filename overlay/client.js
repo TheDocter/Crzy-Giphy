@@ -70,11 +70,28 @@ function ShowGify(data){
         .fadeOut(100);
     }
     else{
+        if hasValue(pic){
+            $("#gify")
+            .prepend("<center><div> <img src=" + pic['data'] + " width='500' height='500'></div></center>")
+            .children(':first')
+            .delay(5000)
+            .fadeOut(100);
+        }
         $("#gify")
-        .prepend("<center><div> <img src=" + pic['data'] + " width='500' height='500'></div></center>")
+        .prepend("<center><div> <img src='https://media3.giphy.com/media/LGVQJ4cQGPs8o/giphy.gif' width='350' height='275'></div></center>")
         .children(':first')
         .delay(5000)
         .fadeOut(100);
     }
 
+}
+
+//----------------------------------
+// Check to see if pic has any data
+//----------------------------------
+fucntion hasValue(pic){
+    if (pic[data] == null){
+        reutrn false;
+    }
+    return true;
 }

@@ -43,8 +43,6 @@ class Settings:
             self.GiphyApi = ''
             self.Command = '!giphy'
             self.Usage = 'Stream Chat'
-            self.MinCoolDown = 30
-            self.MaxCoolDown = 60
             self.Permission = 'Everyone'
             self.PermissionInfo = ''
             self.PermissionResp = '{0} -> only {1} and higher can use this command'
@@ -57,28 +55,29 @@ class Settings:
             self.UserCooldown = 10
             self.OnUserCoolDown = "{0} the command is still on user cooldown for {1} seconds!"
             self.CasterCD = True
+            self.NoCurrency = "{0} -> You don't have any currency to gamble!"
             self.InfoResponse = 'To create a giphy use !giphy keyword keyword. At this time the giphy command only accepts' \
                                 'two keyword. Future versions will allow a full string of keywords.'
 
     def ReloadSettings(self, data):
         """ Reload settings file. """
         self.__dict__ = json.loads(data, encoding='utf-8-sig')
-        return
 
     def SaveSettings(self, settingsFile):
         """ Saves settings File """
-        with codecs.open(settingsFile, encoding='utf-8-sig', mode='w+') as f:
-            json.dump(self.__dict__, f, encoding='utf-8-sig')
-        with codecs.open(settingsFile.replace("json", "js"), encoding='utf-8-sig', mode='w+') as f:
-            f.write("var settings = {0};".format(json.dumps(self.__dict__, encoding='utf-8-sig')))
-        return
+        try:
+            with codecs.open(settingsFile, encoding='utf-8-sig', mode='w+') as f:
+                json.dump(self.__dict__, f, encoding='utf-8-sig')
+            with codecs.open(settingsFile.replace("json", "js"), encoding='utf-8-sig', mode='w+') as f:
+                f.write("var settings = {0};".format(json.dumps(self.__dict__, encoding='utf-8-sig')))
+        except ValueError:
+            Parent.Log(ScriptName, "Failed to save settings to file.")
 
 
 def ReloadSettings(jsonData):
     """ Reload Settings on Save """
     global CGSettings
     CGSettings.ReloadSettings(jsonData)
-    return
 
 
 # ---------------------------------------
@@ -95,8 +94,14 @@ def Execute(data):
     """ Execute data and process the message """
     if data.IsChatMessage() and data.GetParam(0).lower() == CGSettings.Command.lower():
 
+        # make sure the user has enough points
+        if Parent.GetPoints(data.User) == 0:
+            return
+
         # check to see if the user has permissions.
         if not haspermission(data):
+            message = CGSettings.NoCurrency.format(data.UserName)
+            SendResp(data, CGSettings.Usage, message)
             return
 
         if not CGSettings.OnlyLive or Parent.IsLive():
@@ -126,14 +131,15 @@ def Execute(data):
 
                 # Load it to format correctly into json
                 jsondata = json.loads(noslashes)
-                if jsondata['status'] == '403':
-                    SendResp(data, CGSettings.Usage, CGSettings.GiphyErrorMsg)
-                    return
+
 
                 with open('data.txt', 'w') as outfile:
                     json.dump(jsondata["response"]['data'][0]['images']['downsized_large']['url'], outfile)
 
                 gifydata = jsondata["response"]['data'][0]['images']['downsized_large']['url']
+
+                if gifydata is None:
+                    # no image was found. But its okay we have something in place for this.
 
                 # Send confirmation that gify was created.
                 SendResp(data, CGSettings.Usage, CGSettings.GiphyCreatedMsg)
