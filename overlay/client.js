@@ -93,7 +93,7 @@ function ShowGify(data){
 //----------------------------------
 function hasValue(pic){
     if (pic[data] == null){
-        reutrn false;
+        return false;
     }
     return true;
 }
