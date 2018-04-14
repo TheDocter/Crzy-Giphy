@@ -52,7 +52,7 @@ class Settings:
             self.UseCD = True
             self.Cooldown = 5
             self.OnCooldown = "{0} the command is still on cooldown for {1} seconds!"
-            self.UserCooldown = 10
+            self.UserCoolDown = 10
             self.OnUserCoolDown = "{0} the command is still on user cooldown for {1} seconds!"
             self.CasterCD = True
             self.NoCurrency = "{0} -> You don't have any currency to create a giphy!"
@@ -250,5 +250,5 @@ def addcooldown(data):
         return
 
     else:
-        Parent.AddUserCooldown(ScriptName, CGSettings.Command, data.User, CGSettings.UserCooldown)
+        Parent.AddUserCooldown(ScriptName, CGSettings.Command, data.User, CGSettings.UserCoolDown)
         Parent.AddCooldown(ScriptName, CGSettings.Command, CGSettings.Cooldown)
