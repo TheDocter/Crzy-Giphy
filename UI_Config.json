@@ -125,7 +125,7 @@
     "type": "textbox",
     "value": "{0} -> You don't have any currency to create a giphy!",
     "label": "No currency response",
-    "tooltip": "Message sent when user doesn't have any currency to gamble \r\n{0} = User",
+    "tooltip": "Message sent when user doesn't have any currency to use Crzy Giphy \r\n{0} = User",
     "group": "Responses"
   },
     "openReadMe": {
