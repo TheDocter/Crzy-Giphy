@@ -64,7 +64,7 @@ function ShowGify(data){
 
     if (pic["event"] === "EVENT_CONNECTED"){
         $("#gify")
-        .prepend("<div>Crzay Giphy has Connected!</div>")
+        .prepend("<div>Crzy Giphy has Connected!</div>")
         .children(':first')
         .delay(5000)
         .fadeOut(100);
