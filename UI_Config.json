@@ -84,7 +84,7 @@
     "value": false,
   	"label": "Use Cooldown Messages",
     "tooltip": "Enable/Disable cooldown messages",
-  	"group": "Cooldown (All Modes)"
+  	"group": "Cooldown"
   },
   "CoolDown": {
     "type": "numberbox",
