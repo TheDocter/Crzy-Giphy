@@ -50,8 +50,8 @@ class Settings:
             self.GiphyErrorMsg = '{0}, There was an issue with creating the giphy'
             self.GiphyCost = 5
             self.UseCD = True
-            self.Cooldown = 5
-            self.OnCooldown = "{0} the command is still on cooldown for {1} seconds!"
+            self.CoolDown = 5
+            self.OnCoolDown = "{0} the command is still on cooldown for {1} seconds!"
             self.UserCoolDown = 10
             self.OnUserCoolDown = "{0} the command is still on user cooldown for {1} seconds!"
             self.CasterCD = True
@@ -251,4 +251,4 @@ def addcooldown(data):
 
     else:
         Parent.AddUserCooldown(ScriptName, CGSettings.Command, data.User, CGSettings.UserCoolDown)
-        Parent.AddCooldown(ScriptName, CGSettings.Command, CGSettings.Cooldown)
+        Parent.AddCooldown(ScriptName, CGSettings.Command, CGSettings.CoolDown)
