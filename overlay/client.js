@@ -91,7 +91,7 @@ function ShowGify(data){
 //----------------------------------
 // Check to see if pic has any data
 //----------------------------------
-fucntion hasValue(pic){
+function hasValue(pic){
     if (pic[data] == null){
         reutrn false;
     }
