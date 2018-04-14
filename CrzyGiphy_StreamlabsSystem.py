@@ -24,7 +24,7 @@ ScriptName = "Crzy Giphy"
 Website = "https://www.twitch.tv/thecrzydoc"
 Description = "!giphy keywords will pull a giphy from giphy.com and display it on the stream through the web sockets"
 Creator = "TheCrzyDoctor"
-Version = "1.1.0"
+Version = "1.2.0"
 
 # ---------------------------------------
 # Settings fiel setup
