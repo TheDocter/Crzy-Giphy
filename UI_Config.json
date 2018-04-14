@@ -75,7 +75,7 @@
   "CasterCD": {
     "type": "checkbox",
     "value": true,
-  	"label": "Caster ignores cooldown",
+  	"label": "Caster uses cooldown",
     "tooltip": "Enable/Disable cooldown for caster",
   	"group": "Cooldown"
   },

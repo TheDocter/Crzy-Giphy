@@ -104,6 +104,10 @@ def Execute(data):
         if not haspermission(data):
             return
 
+        # check if user or command is on cooldown.
+        if is_on_cooldown(data):
+            return
+
         if not CGSettings.OnlyLive or Parent.IsLive():
             # get the parameter
             if data.GetParamCount() > 3:
@@ -222,7 +226,7 @@ def is_on_cooldown(data):
     user_cool_down = Parent.IsOnUserCooldown(ScriptName, CGSettings.Command, data.User)
     caster = Parent.HasPermission(data.User, "Caster", "")
 
-    if (cooldown or user_cool_down) and caster is False:
+    if (cooldown or user_cool_down) and caster is False and not  CGSettings.CasterCD:
 
         if CGSettings.UseCD:
             cooldownDuration = Parent.GetCooldownDuration(ScriptName, CGSettings.Command)
@@ -231,13 +235,30 @@ def is_on_cooldown(data):
             if cooldownDuration > userCDD:
                 m_CooldownRemaining = cooldownDuration
 
-                message = CGSettings.OnCooldown.format(data.UserName, m_CooldownRemaining)
+                message = CGSettings.OnCoolDown.format(data.UserName, m_CooldownRemaining)
                 SendResp(data, CGSettings.Usage, message)
 
             else:
                 m_CooldownRemaining = userCDD
 
-                message = CGSettings.OnUserCooldown.format(data.UserName, m_CooldownRemaining)
+                message = CGSettings.OnUserCoolDown.format(data.UserName, m_CooldownRemaining)
+                SendResp(data, CGSettings.Usage, message)
+        return True
+    elif CGSettings.CasterCD:
+        if CGSettings.UseCD:
+            cooldownDuration = Parent.GetCooldownDuration(ScriptName, CGSettings.Command)
+            userCDD = Parent.GetUserCooldownDuration(ScriptName, CGSettings.Command, data.User)
+
+            if cooldownDuration > userCDD:
+                m_CooldownRemaining = cooldownDuration
+
+                message = CGSettings.OnCoolDown.format(data.UserName, m_CooldownRemaining)
+                SendResp(data, CGSettings.Usage, message)
+
+            else:
+                m_CooldownRemaining = userCDD
+
+                message = CGSettings.OnUserCoolDown.format(data.UserName, m_CooldownRemaining)
                 SendResp(data, CGSettings.Usage, message)
         return True
     return False
