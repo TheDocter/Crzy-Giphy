@@ -246,7 +246,7 @@ def is_on_cooldown(data):
 def addcooldown(data):
     """Create Cooldowns Based on Castorr91's Gamble"""
     if Parent.HasPermission(data.User, "Caster", "") and CGSettings.CasterCD:
-        Parent.AddCooldown(ScriptName, CGSettings.Command, CGSettings.Cooldown)
+        Parent.AddCooldown(ScriptName, CGSettings.Command, CGSettings.CoolDown)
         return
 
     else:
